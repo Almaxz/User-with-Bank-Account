@@ -1,104 +1,82 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+from Bank_Account import BankAccount
 
-# C extensions
-*.so
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+        self.account = BankAccount(int_rate = 0.02, balance = 0)
+        self.saving = BankAccount(int_rate = 0.05, balance = 0)
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+    def make_deposit(self, amount, account_name):
+        if account_name == "Checking":
+            self.account.deposit(amount)
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+        elif account_name == "Saving":
+            self.saving.deposit(amount)
+            
+        return self
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+    def make_withdrawal(self, amount, account_name):
+        if account_name == "Checking":
+            self.account.withdraw(amount)
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
+        elif account_name == "Saving":
+            self.saving.withdraw(amount)
+            
+        return self
 
-# Translations
-*.mo
-*.pot
+    def display_useraccount(self, account_name):
+        if account_name == "Checking":
+            print(self.name, ":", "Checking =", self.account.balance)
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
+        elif account_name == "Saving":
+            print(self.name, ":", "Saving =", self.saving.balance)
 
-# Flask stuff:
-instance/
-.webassets-cache
+        else:
+            print(self.name, ":", "Checking =",self.account.balance, "Saving =", self.saving.balance)
+            
+        return self
 
-# Scrapy stuff:
-.scrapy
+    def transfer_money(self, other_user, amount, account_name):
+        self.other_user = other_user
+        if account_name == "Checking":
+            if self.account.balance < amount:
+                self.account.withdraw(amount)
 
-# Sphinx documentation
-docs/_build/
+            else:
+                self.account.withdraw(amount)
+                other_user.account.deposit(amount)
 
-# PyBuilder
-target/
+            print(self.name, ":", "Checking =", self.account.balance)
+            print(other_user.name, ":", "Checking =", other_user.account.balance)
 
-# Jupyter Notebook
-.ipynb_checkpoints
+        elif account_name == "Saving":
+            self.saving.withdraw(amount)
+            other_user.saving.deposit(amount)
+            print(self.name, ":", "Saving =", self.account.balance)
+            print(other_user.name, ":", "Saving =", other_user.account.balance)
 
-# pyenv
-.python-version
+        else:
+            if self.account.balance < amount:
+                self.account.withdraw(amount)
 
-# celery beat schedule file
-celerybeat-schedule
+            else:
+                self.account.withdraw(amount)
+                other_user.account.deposit(amount)
 
-# SageMath parsed files
-*.sage.py
+            print(self.name, ":", "Checking =",self.account.balance, "Saving =", self.saving.balance)
+            print(other_user.name, ":", "Checking =",other_user.account.balance, "Saving =", other_user.saving.balance)
+        
+        return self
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+alpha = User("Alpha", "alpha@gmail.com")
+beta = User("Beta", "beta@gmail.com")
+charlie = User("Charlie", "charlie@gmail.com")
 
-# Spyder project settings
-.spyderproject
-.spyproject
+alpha.make_deposit(5000, "Saving").make_deposit(1500, "Checking").make_deposit(3300, "Checking").make_withdrawal(2500, "Checking").display_useraccount("")
 
-# Rope project settings
-.ropeproject
+beta.make_deposit(9200, "Saving").make_deposit(1200, "Checking").make_withdrawal(3000, "Saving").make_withdrawal(500, "Checking").display_useraccount("")
 
-# mkdocs documentation
-/site
+charlie.make_deposit(50000, "Saving").make_withdrawal(2500, "Saving").make_withdrawal(1000, "Saving").make_withdrawal(1000, "Saving").display_useraccount("")
 
-# mypy
-.mypy_cache/
+alpha.transfer_money(charlie, 2000, "")
